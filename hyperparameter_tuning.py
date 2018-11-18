@@ -15,6 +15,15 @@ from keras.activations import relu, elu, sigmoid
 from talos.model.layers import hidden_layers
 from talos.model.normalizers import lr_normalizer
 from talos import Deploy
+import os
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+set_session(tf.Session(config=config))
 
 full_train_res = pd.read_csv('../HYU_data/full_train_res.csv', sep='\t',index_col=0)
 
@@ -72,7 +81,7 @@ p = {'lr': (0.5, 5, 10),
 h = ta.Scan(train, np.array(y_pred.tolist()), params=p,
             model=higgs_nn,
             dataset_name='higgs_nn',
-            experiment_no='1',
+            experiment_no='2',
             grid_downsample=0.1,
 	    val_split=0.3)
 
