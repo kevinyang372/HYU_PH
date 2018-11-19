@@ -19,10 +19,9 @@ import os
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 config = tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction = 0.3
+config.gpu_options.per_process_gpu_memory_fraction = 0.7
 set_session(tf.Session(config=config))
 
 full_train_res = pd.read_csv('../HYU_data/full_train_res.csv', sep='\t',index_col=0)
