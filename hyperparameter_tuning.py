@@ -64,17 +64,17 @@ def higgs_nn(X_train, Y_train, X_valid, Y_valid, params):
     return history, model  
 
 p = {'lr': (0.5, 5, 10),
-     'first_neuron':[4, 8, 16, 32, 64],
-     'hidden_layers':[2, 3, 4, 5, 6],
-     'batch_size': (2, 10, 30),
+     'first_neuron':[8, 16, 32],
+     'hidden_layers':[4, 5, 6],
+     'batch_size': (32, 64, 128),
      'epochs': [70],
      'dropout': (0, 0.5, 5),
      'weight_regulizer':[None],
      'emb_output_dims': [None],
      'shape':['brick','long_funnel'],
-     'optimizer': [Adam, Nadam, RMSprop],
+     'optimizer': [Adam, RMSprop],
      'losses': [logcosh, binary_crossentropy],
-     'activation':[relu, elu],
+     'activation':[relu],
      'last_activation': [sigmoid]}
 
 h = ta.Scan(train, np.array(y_pred.tolist()), params=p,
