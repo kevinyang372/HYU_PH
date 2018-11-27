@@ -63,16 +63,16 @@ def higgs_nn(X_train, Y_train, X_valid, Y_valid, params):
     # finally we have to make sure that history object and model are returned
     return history, model  
 
-p = {'lr': (0.5, 5, 10),
-     'first_neuron':[8, 16, 32],
-     'hidden_layers':[4, 5, 6],
-     'batch_size': (32, 64, 128),
+p = {'lr': [0.1],
+     'first_neuron':[16, 32],
+     'hidden_layers':[4, 6, 8],
+     'batch_size': [32, 64, 128],
      'epochs': [70],
-     'dropout': (0, 0.5, 5),
+     'dropout': (0, 0.5 ,5),
      'weight_regulizer':[None],
      'emb_output_dims': [None],
      'shape':['brick','long_funnel'],
-     'optimizer': [Adam, RMSprop],
+     'optimizer': [RMSprop],
      'losses': [logcosh, binary_crossentropy],
      'activation':[relu],
      'last_activation': [sigmoid]}
@@ -80,7 +80,7 @@ p = {'lr': (0.5, 5, 10),
 h = ta.Scan(train, np.array(y_pred.tolist()), params=p,
             model=higgs_nn,
             dataset_name='higgs_nn',
-            experiment_no='2',
+            experiment_no='1',
             grid_downsample=0.1,
 	    val_split=0.3)
 
