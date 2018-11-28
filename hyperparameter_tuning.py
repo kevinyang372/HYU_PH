@@ -9,8 +9,8 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.utils import np_utils
 from scipy.stats import ks_2samp
 import talos as ta
-from keras.optimizers import Adam, Nadam, RMSprop
-from keras.losses import logcosh, binary_crossentropy
+from keras.optimizers import Adam, Nadam, RMSprop, SGD
+from keras.losses import logcosh, binary_crossentropy, categorical_crossentropy
 from keras.activations import relu, elu, sigmoid
 from talos.model.layers import hidden_layers
 from talos.model.normalizers import lr_normalizer
@@ -27,6 +27,7 @@ set_session(tf.Session(config=config))
 full_train_res = pd.read_csv('../HYU_data/full_train_res.csv', sep='\t',index_col=0)
 
 y_pred = full_train_res['result']
+y_pred_nn = np_utils.to_categorical(y_pred)
 full_train = full_train_res.drop('result',1)
 
 def preprocess_data(X, scaler=None):
@@ -45,9 +46,9 @@ def higgs_nn(X_train, Y_train, X_valid, Y_valid, params):
                     kernel_initializer='normal'))
     model.add(Dropout(params['dropout']))
 
-    hidden_layers(model, params, 1)
+    hidden_layers(model, params, 2)
     
-    model.add(Dense(1, activation=params['last_activation'],
+    model.add(Dense(2, activation=params['last_activation'],
                     kernel_initializer='normal'))
     
     model.compile(loss=params['losses'],
@@ -58,30 +59,29 @@ def higgs_nn(X_train, Y_train, X_valid, Y_valid, params):
                         validation_data=[X_valid, Y_valid],
                         batch_size=params['batch_size'],
                         epochs=params['epochs'],
-                        verbose=0)
+                        verbose=2)
     
     # finally we have to make sure that history object and model are returned
     return history, model  
 
-p = {'lr': [0.1],
+p = {'lr': [0.01],
      'first_neuron':[16, 32],
-     'hidden_layers':[4, 6, 8],
+     'hidden_layers':[6, 8, 10],
      'batch_size': [32, 64, 128],
      'epochs': [70],
-     'dropout': (0, 0.5 ,5),
+     'dropout': (0, 0.5 ,1.5),
      'weight_regulizer':[None],
      'emb_output_dims': [None],
      'shape':['brick','long_funnel'],
-     'optimizer': [RMSprop],
-     'losses': [logcosh, binary_crossentropy],
+     'optimizer': [SGD, RMSprop],
+     'losses': [categorical_crossentropy],
      'activation':[relu],
      'last_activation': [sigmoid]}
 
-h = ta.Scan(train, np.array(y_pred.tolist()), params=p,
+h = ta.Scan(train, y_pred_nn, params=p,
             model=higgs_nn,
             dataset_name='higgs_nn',
             experiment_no='1',
-            grid_downsample=0.1,
 	    val_split=0.3)
 
 
